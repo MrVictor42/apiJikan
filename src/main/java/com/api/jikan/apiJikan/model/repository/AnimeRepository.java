@@ -5,9 +5,8 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.api.jikan.apiJikan.model.entities.Anime;
 
-public interface AnimeRepository extends CrudRepository<Anime, Long> {
+public interface AnimeRepository extends CrudRepository<Anime, Integer> {
 	
-	public Iterable<Anime> findByOrderByTitleAsc();
 	public Anime findBySlug(String slug);
 	@Query(value = "SELECT DISTINCT A.* FROM anime A LEFT JOIN anime_genders AG ON A.id = AG.anime_id "
 			+ "LEFT JOIN anime_producers AP ON A.id = AP.anime_id WHERE AG.gender_id = (?) AND AP.producer_id = (?)", 

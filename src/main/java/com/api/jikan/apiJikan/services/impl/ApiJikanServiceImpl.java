@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.api.jikan.apiJikan.model.entities.Anime;
 import com.api.jikan.apiJikan.model.entities.Gender;
+import com.api.jikan.apiJikan.model.entities.Manga;
 import com.api.jikan.apiJikan.model.entities.Producer;
+import com.api.jikan.apiJikan.model.entities.TopAnime;
 import com.api.jikan.apiJikan.services.interfaces.ApiJikanService;
 
 @Service
@@ -21,6 +23,8 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 	private DateServiceImpl dateServiceImpl = new DateServiceImpl();		
 	private final String JIKAN_API = 
 			"https://api.jikan.moe/v3/season/" + dateServiceImpl.getYear() + "/" + dateServiceImpl.getSeason();
+	private final String TOP_MANGA = "https://api.jikan.moe/v3/top/manga";
+	private final String TOP_ANIME = "https://api.jikan.moe/v3/top/anime";
 	
 	@Autowired
 	private AnimeServiceImpl animeServiceImpl;
@@ -28,6 +32,10 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 	private GenderServiceImpl genderServiceImpl;
 	@Autowired
 	private ProducerServiceImpl producerServiceImpl;
+	@Autowired
+	private MangaServiceImpl mangaServiceImpl;
+	@Autowired
+	private TopAnimeServiceImpl topAnimeServiceImpl;
 	
 	@Override
 	public boolean databaseIsEmpty() {
@@ -45,6 +53,8 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 		animeServiceImpl.deleteAnime();
 		genderServiceImpl.deleteGenders();
 		producerServiceImpl.deleteProducers();
+		mangaServiceImpl.deleteAnime();
+		topAnimeServiceImpl.deleteTopAnime();
 	}
 
 	@Override
@@ -52,9 +62,15 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 	
 		HttpHandlerServiceImpl handlerServiceImpl = new HttpHandlerServiceImpl();
 		SlugServiceImpl slugServiceImpl = new SlugServiceImpl();
-		String jsonJikan = handlerServiceImpl.makeServiceCall(JIKAN_API);			
+		String jsonJikan = handlerServiceImpl.makeServiceCall(JIKAN_API);
+		String jsonManga = handlerServiceImpl.makeServiceCall(TOP_MANGA);
+		String jsonAnime = handlerServiceImpl.makeServiceCall(TOP_ANIME);
 		JSONObject jikanAnimeObject = new JSONObject(jsonJikan);
+		JSONObject jikanMangaObject = new JSONObject(jsonManga);
+		JSONObject jikanTopAnimeObject = new JSONObject(jsonAnime);
 		JSONArray jikanArrayAnime = jikanAnimeObject.getJSONArray("anime");
+		JSONArray jikanArrayManga = jikanMangaObject.getJSONArray("top");
+		JSONArray jikanArrayAnimeTop = jikanTopAnimeObject.getJSONArray("top");
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd");
@@ -99,6 +115,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 				} else {
 					
 					if(producerServiceImpl.existsProducerByName(jikanProducerObject.getString("name")) != null) {
+						
 						Producer producerSaved = producerServiceImpl.existsProducerByName(jikanProducerObject.getString("name"));
 						
 						anime.getProducers().add(producerSaved);
@@ -120,6 +137,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 				} else {
 										
 					if(genderServiceImpl.existsGenderByName(jikanGenresObject.getString("name")) != null) {
+						
 						Gender genderSaved = genderServiceImpl.existsGenderByName(jikanGenresObject.getString("name"));
 						
 						anime.getGenders().add(genderSaved);		
@@ -134,6 +152,68 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			
 			animeServiceImpl.createAnime(anime);
 		}
+		
+		for(int aux = 0; aux < jikanArrayManga.length(); aux ++) {
+			
+			Manga manga = new Manga();
+			
+			JSONObject jikanMangaJSONObject = jikanArrayManga.getJSONObject(aux);
+			
+			manga.setTitle(jikanMangaJSONObject.getString("title"));
+			manga.setSlug(slugServiceImpl.makeSlug(manga.getTitle()));
+			manga.setStart_date(jikanMangaJSONObject.getString("start_date"));
+			manga.setImage_url(jikanMangaJSONObject.getString("image_url"));
+			
+			if(jikanMangaJSONObject.getString("volumes").equals("null") || 
+					jikanMangaJSONObject.getString("volumes").isEmpty()) {
+				manga.setVolumes(0);
+			} else {
+				manga.setVolumes(jikanMangaJSONObject.getInt("volumes"));
+			}
+			
+			if(jikanMangaJSONObject.getString("end_date").equals("null") || 
+					jikanMangaJSONObject.getString("end_date").isEmpty()) {
+				manga.setEnd_date("Undefined");
+			} else {
+				manga.setEnd_date("end_date");
+			}
+			
+			if(jikanMangaJSONObject.getString("score").equals("null") ||
+					jikanMangaJSONObject.getString("score").isEmpty()) {
+				manga.setScore(0.0);
+			} else {
+				manga.setScore(jikanMangaJSONObject.getDouble("score"));
+			}
+			
+			mangaServiceImpl.createManga(manga);
+		}
+		
+		for(int aux = 0; aux < jikanArrayAnimeTop.length(); aux ++) {
+			
+			TopAnime anime = new TopAnime();
+			
+			JSONObject jikanAnimeTopJSONObject = jikanArrayAnimeTop.getJSONObject(aux);
+			
+			anime.setTitle(jikanAnimeTopJSONObject.getString("title"));
+			anime.setImage_url(jikanAnimeTopJSONObject.getString("image_url"));
+			anime.setStart_date(jikanAnimeTopJSONObject.getString("start_date"));
+			
+			if(jikanAnimeTopJSONObject.getString("end_date").equals("null") ||
+					jikanAnimeTopJSONObject.getString("end_date").isEmpty()) {
+				anime.setEnd_date("Undefined");
+			} else {
+				anime.setEnd_date("end_date");
+			}
+			
+			if(jikanAnimeTopJSONObject.getString("score").equals("null") ||
+					jikanAnimeTopJSONObject.getString("score").isEmpty()) {
+				anime.setScore(0.0);
+			} else {
+				anime.setScore(jikanAnimeTopJSONObject.getDouble("score"));
+			}
+			
+			topAnimeServiceImpl.createTopAnime(anime);
+		}
 	}
 
 	@Override
@@ -147,8 +227,10 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			String jsonJikan = handlerServiceImpl.makeServiceCall(JIKAN_API);			
 			JSONObject jikanAnimeObject = new JSONObject(jsonJikan);
 			String season_name = jikanAnimeObject.getString("season_name");
-			
-			if(dateServiceImpl.getSeason().equalsIgnoreCase(season_name)) {
+			JSONArray jikanArrayAnime = jikanAnimeObject.getJSONArray("anime");
+						
+			if(dateServiceImpl.getSeason().equalsIgnoreCase(season_name) || 
+					animeServiceImpl.countAnimeInDatabase() != jikanArrayAnime.length()) {
 				
 			} else {
 				

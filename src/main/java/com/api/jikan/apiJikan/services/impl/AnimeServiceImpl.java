@@ -20,7 +20,7 @@ public class AnimeServiceImpl implements AnimeService {
 
 	@Override
 	public Iterable<Anime> getAllAnime() {
-		return animeRepository.findByOrderByTitleAsc();
+		return animeRepository.findAll();
 	}
 
 	@Override
