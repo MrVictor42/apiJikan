@@ -22,7 +22,7 @@ public class ProducerServiceImpl implements ProducerService {
 	public Iterable<Producer> getAllProducers() {
 		return producerRepository.findAll();
 	}
-
+	
 	@Override
 	public Producer existsProducerByName(String name) {
 		

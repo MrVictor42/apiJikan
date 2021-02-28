@@ -11,7 +11,6 @@ public class CorsConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
             .allowedOrigins("*")
-//            .allowedOrigins("https://jikan-api.herokuapp.com/api/")
             .allowedMethods("GET");
     }
 }

@@ -37,4 +37,19 @@ public class AnimeServiceImpl implements AnimeService {
 	public Anime getAnime(String slug) {
 		return animeRepository.findBySlug(slug);
 	}
+
+	@Override
+	public Iterable<Anime> filterAnime(int genderId, int producerId) {
+		return animeRepository.findByGendersAndByProducerId(genderId, producerId);
+	}
+
+	@Override
+	public Iterable<Anime> filterAnimeByGender(int genderId) {
+		return animeRepository.findByGendersById(genderId);
+	}
+
+	@Override
+	public Iterable<Anime> filterAnimeByProducer(int producerId) {
+		return animeRepository.findByProducersById(producerId);
+	}
 }
