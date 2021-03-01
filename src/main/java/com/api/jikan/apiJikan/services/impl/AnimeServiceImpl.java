@@ -24,8 +24,8 @@ public class AnimeServiceImpl implements AnimeService {
 	}
 
 	@Override
-	public void deleteAnime() {
-		animeRepository.deleteAll();
+	public void deleteDatabase() {
+		animeRepository.deleteDatabase();
 	}
 
 	@Override

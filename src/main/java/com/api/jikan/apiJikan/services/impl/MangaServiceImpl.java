@@ -24,7 +24,7 @@ public class MangaServiceImpl implements MangaService {
 	}
 
 	@Override
-	public void deleteAnime() {
+	public void deleteManga() {
 		mangaRepository.deleteAll();
 	}
 

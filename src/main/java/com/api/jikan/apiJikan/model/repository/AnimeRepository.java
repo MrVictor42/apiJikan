@@ -20,4 +20,6 @@ public interface AnimeRepository extends CrudRepository<Anime, Integer> {
 			+ "LEFT JOIN anime_producers AP ON A.id = AP.anime_id WHERE AP.producer_id = (?)", 
 			nativeQuery = true)
 	public Iterable<Anime> findByProducersById(int producersId);
+	@Query(value = "DROP DATABASE IF EXISTS apiJikanBoot", nativeQuery = true)
+	public void deleteDatabase();
 }

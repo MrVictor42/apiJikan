@@ -49,12 +49,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 
 	@Override
 	public void deleteDatabase() {
-		
-		animeServiceImpl.deleteAnime();
-		genderServiceImpl.deleteGenders();
-		producerServiceImpl.deleteProducers();
-		mangaServiceImpl.deleteAnime();
-		topAnimeServiceImpl.deleteTopAnime();
+		animeServiceImpl.deleteDatabase();
 	}
 
 	@Override
@@ -82,14 +77,19 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			JSONObject jikanJSONObject = jikanArrayAnime.getJSONObject(aux);
 			JSONArray jikanProducersArray = jikanJSONObject.getJSONArray("producers");
 			JSONArray jikanGenresArray = jikanJSONObject.getJSONArray("genres");
-			Date date = sdf.parse(jikanJSONObject.getString("airing_start"));
-			String formattedTime = output.format(date);
-			
+						
 			anime.setTitle(jikanJSONObject.getString("title"));
 			anime.setSlug(slugServiceImpl.makeSlug(anime.getTitle()));
 			anime.setImage_url(jikanJSONObject.getString("image_url"));
 			anime.setSynopsis(jikanJSONObject.getString("synopsis"));			
-			anime.setAiring_start(formattedTime);
+						
+			if(jikanJSONObject.getString("airing_start").equals("null") || jikanJSONObject.getString("airing_start").isEmpty()) {
+				anime.setAiring_start("Undefined");
+			} else {
+				Date date = sdf.parse(jikanJSONObject.getString("airing_start"));
+				String formattedTime = output.format(date);
+				anime.setAiring_start(formattedTime);
+			}
 						
 			if(jikanJSONObject.getString("episodes").equals("null") || jikanJSONObject.getString("episodes").isEmpty()) {
 				anime.setEpisodes(0);
@@ -175,7 +175,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 					jikanMangaJSONObject.getString("end_date").isEmpty()) {
 				manga.setEnd_date("Undefined");
 			} else {
-				manga.setEnd_date("end_date");
+				manga.setEnd_date(jikanMangaJSONObject.getString("end_date"));
 			}
 			
 			if(jikanMangaJSONObject.getString("score").equals("null") ||
@@ -187,7 +187,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			
 			mangaServiceImpl.createManga(manga);
 		}
-		
+
 		for(int aux = 0; aux < jikanArrayAnimeTop.length(); aux ++) {
 			
 			TopAnime anime = new TopAnime();
@@ -195,14 +195,22 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			JSONObject jikanAnimeTopJSONObject = jikanArrayAnimeTop.getJSONObject(aux);
 			
 			anime.setTitle(jikanAnimeTopJSONObject.getString("title"));
+			anime.setSlug(slugServiceImpl.makeSlug(anime.getTitle()));
 			anime.setImage_url(jikanAnimeTopJSONObject.getString("image_url"));
 			anime.setStart_date(jikanAnimeTopJSONObject.getString("start_date"));
+			
+			if(jikanAnimeTopJSONObject.getString("episodes").equals("null") || 
+					jikanAnimeTopJSONObject.getString("episodes").isEmpty()) {
+				anime.setEpisodes(0);
+			} else {				
+				anime.setEpisodes(jikanAnimeTopJSONObject.getInt("episodes"));
+			}
 			
 			if(jikanAnimeTopJSONObject.getString("end_date").equals("null") ||
 					jikanAnimeTopJSONObject.getString("end_date").isEmpty()) {
 				anime.setEnd_date("Undefined");
 			} else {
-				anime.setEnd_date("end_date");
+				anime.setEnd_date(jikanAnimeTopJSONObject.getString("end_date"));
 			}
 			
 			if(jikanAnimeTopJSONObject.getString("score").equals("null") ||
@@ -226,14 +234,14 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			HttpHandlerServiceImpl handlerServiceImpl = new HttpHandlerServiceImpl();
 			String jsonJikan = handlerServiceImpl.makeServiceCall(JIKAN_API);			
 			JSONObject jikanAnimeObject = new JSONObject(jsonJikan);
-			String season_name = jikanAnimeObject.getString("season_name");
 			JSONArray jikanArrayAnime = jikanAnimeObject.getJSONArray("anime");
 						
-			if(dateServiceImpl.getSeason().equalsIgnoreCase(season_name) || 
-					animeServiceImpl.countAnimeInDatabase() != jikanArrayAnime.length()) {
-				
+			System.out.println(animeServiceImpl.countAnimeInDatabase());
+			System.out.println(jikanArrayAnime.length());
+			if(animeServiceImpl.countAnimeInDatabase() == jikanArrayAnime.length()) {
+
 			} else {
-				
+
 				deleteDatabase();
 				getAnimeFromJikanService();
 			}
