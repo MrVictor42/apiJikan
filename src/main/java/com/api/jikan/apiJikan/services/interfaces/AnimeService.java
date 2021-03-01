@@ -5,7 +5,7 @@ import com.api.jikan.apiJikan.model.entities.Anime;
 public interface AnimeService {
 	
 	public void createAnime(Anime anime);
-	public void deleteAnime();
+	public void deleteDatabase();
 	public Anime getAnime(String slug);
 	public long countAnimeInDatabase();
 	public Iterable<Anime> getAllAnime();

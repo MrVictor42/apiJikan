@@ -6,6 +6,6 @@ public interface MangaService {
 	
 	public void createManga(Manga manga);
 	public Manga getManga(String slug);
-	public void deleteAnime();
+	public void deleteManga();
 	public Iterable<Manga> getAllManga();
 }

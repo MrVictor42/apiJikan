@@ -26,20 +26,14 @@ public class Anime {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	@Column(nullable = false)
 	private String title;
-	@Column(nullable = false)
 	private String slug;
-	@Column(nullable = false)
 	private String image_url;
 	@Lob
-	@Column(nullable = false, length = 1000)
+	@Column(length = 1000)
 	private String synopsis;
-	@Column(nullable = false)
 	private String airing_start;
-	@Column(nullable = false)
 	private int episodes;
-	@Column(nullable = false)
 	private double score;
 	private boolean kids;
 	private boolean continuing;

@@ -32,7 +32,7 @@ public class DateServiceImpl implements DateService {
 		int currentMonth = getCurrentMonth();
 		String season = "";
 		
-		if(currentMonth > MARCH && currentMonth <= MAY) {
+		if(currentMonth >= MARCH && currentMonth <= MAY) {
 			season = "spring";
 		} else if(currentMonth > MAY && currentMonth <= AUGUST) {
 			season = "summer";
