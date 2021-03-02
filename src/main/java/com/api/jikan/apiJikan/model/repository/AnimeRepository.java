@@ -22,4 +22,6 @@ public interface AnimeRepository extends CrudRepository<Anime, Integer> {
 	public Iterable<Anime> findByProducersById(int producersId);
 	@Query(value = "DROP DATABASE IF EXISTS apiJikanBoot", nativeQuery = true)
 	public void deleteDatabase();
+	@Query(value = "CREATE DATABASE IF NOT EXISTS apiJikanBoot", nativeQuery = true)
+	public void createDatabase();
 }

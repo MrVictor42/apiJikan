@@ -52,4 +52,9 @@ public class AnimeServiceImpl implements AnimeService {
 	public Iterable<Anime> filterAnimeByProducer(int producerId) {
 		return animeRepository.findByProducersById(producerId);
 	}
+
+	@Override
+	public void createDatabase() {
+		animeRepository.createDatabase();		
+	}
 }

@@ -8,6 +8,7 @@ public interface ApiJikanService {
 	
 	public boolean databaseIsEmpty();
 	public void deleteDatabase();
+	public void createDatabase();
 	public void getAnimeFromJikanService() throws JSONException, ParseException;
 	public void synchronizeDatabase() throws JSONException, ParseException;
 }

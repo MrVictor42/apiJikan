@@ -51,6 +51,11 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 	public void deleteDatabase() {
 		animeServiceImpl.deleteDatabase();
 	}
+	
+	@Override
+	public void createDatabase() {
+		animeServiceImpl.createDatabase();		
+	}
 
 	@Override
 	public void getAnimeFromJikanService() throws JSONException, ParseException {
@@ -239,10 +244,11 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			System.out.println(animeServiceImpl.countAnimeInDatabase());
 			System.out.println(jikanArrayAnime.length());
 			if(animeServiceImpl.countAnimeInDatabase() == jikanArrayAnime.length()) {
-
+				
 			} else {
 
 				deleteDatabase();
+				createDatabase();
 				getAnimeFromJikanService();
 			}
 		}

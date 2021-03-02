@@ -6,6 +6,7 @@ public interface AnimeService {
 	
 	public void createAnime(Anime anime);
 	public void deleteDatabase();
+	public void createDatabase();
 	public Anime getAnime(String slug);
 	public long countAnimeInDatabase();
 	public Iterable<Anime> getAllAnime();
