@@ -241,10 +241,8 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			JSONObject jikanAnimeObject = new JSONObject(jsonJikan);
 			JSONArray jikanArrayAnime = jikanAnimeObject.getJSONArray("anime");
 						
-			System.out.println(animeServiceImpl.countAnimeInDatabase());
-			System.out.println(jikanArrayAnime.length());
 			if(animeServiceImpl.countAnimeInDatabase() == jikanArrayAnime.length()) {
-				
+				return;
 			} else {
 
 				deleteDatabase();
