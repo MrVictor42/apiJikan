@@ -1,6 +1,9 @@
 package com.api.jikan.apiJikan.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.api.jikan.apiJikan.model.entities.Anime;
@@ -56,5 +59,11 @@ public class AnimeServiceImpl implements AnimeService {
 	@Override
 	public void createDatabase() {
 		animeRepository.createDatabase();		
+	}
+
+	@Override
+	public Iterable<Anime> getAnimeCarousel() {
+		Pageable pageable = PageRequest.of(0, 8, Sort.by("id"));
+		return animeRepository.findAll(pageable);
 	}
 }

@@ -24,9 +24,13 @@ public class AnimeController {
 	
 	@GetMapping("/list")
 	public Iterable<Anime> getAllAnime() throws JSONException, ParseException {
-		
-		apiJikanServiceImpl.synchronizeDatabase();
+//		apiJikanServiceImpl.synchronizeDatabase();
 		return animeServiceImpl.getAllAnime();
+	}
+	
+	@GetMapping("/carousel")
+	public Iterable<Anime> getAnimeCarousel() {
+		return animeServiceImpl.getAnimeCarousel();
 	}
 	
 	@GetMapping("/{slug}")

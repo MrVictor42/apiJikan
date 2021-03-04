@@ -1,11 +1,11 @@
 package com.api.jikan.apiJikan.model.repository;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.api.jikan.apiJikan.model.entities.Anime;
 
-public interface AnimeRepository extends CrudRepository<Anime, Integer> {
+public interface AnimeRepository extends PagingAndSortingRepository<Anime, Integer> {
 	
 	public Anime findBySlug(String slug);
 	@Query(value = "SELECT DISTINCT A.* FROM anime A LEFT JOIN anime_genders AG ON A.id = AG.anime_id "

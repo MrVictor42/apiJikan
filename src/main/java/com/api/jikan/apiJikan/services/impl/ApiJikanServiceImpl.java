@@ -25,6 +25,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			"https://api.jikan.moe/v3/season/" + dateServiceImpl.getYear() + "/" + dateServiceImpl.getSeason();
 	private final String TOP_MANGA = "https://api.jikan.moe/v3/top/manga";
 	private final String TOP_ANIME = "https://api.jikan.moe/v3/top/anime";
+	private String ANIME_DETAILS = "https://api.jikan.moe/v3/anime/";
 	
 	@Autowired
 	private AnimeServiceImpl animeServiceImpl;
@@ -81,83 +82,108 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			
 			JSONObject jikanJSONObject = jikanArrayAnime.getJSONObject(aux);
 			JSONArray jikanProducersArray = jikanJSONObject.getJSONArray("producers");
-			JSONArray jikanGenresArray = jikanJSONObject.getJSONArray("genres");
-						
-			anime.setTitle(jikanJSONObject.getString("title"));
-			anime.setSlug(slugServiceImpl.makeSlug(anime.getTitle()));
-			anime.setImage_url(jikanJSONObject.getString("image_url"));
-			anime.setSynopsis(jikanJSONObject.getString("synopsis"));			
-						
-			if(jikanJSONObject.getString("airing_start").equals("null") || jikanJSONObject.getString("airing_start").isEmpty()) {
-				anime.setAiring_start("Undefined");
-			} else {
-				Date date = sdf.parse(jikanJSONObject.getString("airing_start"));
-				String formattedTime = output.format(date);
-				anime.setAiring_start(formattedTime);
-			}
-						
-			if(jikanJSONObject.getString("episodes").equals("null") || jikanJSONObject.getString("episodes").isEmpty()) {
-				anime.setEpisodes(0);
-			} else {				
-				anime.setEpisodes(jikanJSONObject.getInt("episodes"));
-			}
-						
-			if(jikanJSONObject.getString("score").equals("null")) {
-				anime.setScore(5.0);
-			} else {
-				anime.setScore(jikanJSONObject.getDouble("score"));
-			}
-						
-			anime.setKids(jikanJSONObject.getBoolean("kids"));
-			anime.setContinuing(jikanJSONObject.getBoolean("continuing"));
+			JSONArray jikanGenresArray = jikanJSONObject.getJSONArray("genres");				
+			String mal_id = jikanJSONObject.getString("mal_id");
+			String jsonAnimeDetails = handlerServiceImpl.makeServiceCall(ANIME_DETAILS + mal_id);
 			
-			for(int auxProducer = 0; auxProducer < jikanProducersArray.length(); auxProducer ++) {
-			
-				JSONObject jikanProducerObject = jikanProducersArray.getJSONObject(auxProducer);
+			if(jsonAnimeDetails == null) {
 				
-				if(jikanProducerObject == null) {
-					
+			} else {
+				
+				JSONObject jikanAnimeDetailObject = new JSONObject(jsonAnimeDetails);
+				
+				anime.setTitle(jikanJSONObject.getString("title"));
+				anime.setMal_id(jikanJSONObject.getString("mal_id"));
+				anime.setSlug(slugServiceImpl.makeSlug(anime.getTitle()));
+				anime.setImage_url(jikanJSONObject.getString("image_url"));
+				anime.setSynopsis(jikanJSONObject.getString("synopsis"));
+				
+				if(jikanAnimeDetailObject.getString("trailer_url").equals("null") ||
+						jikanAnimeDetailObject.getString("trailer_url").isEmpty()) {
+					anime.setTrailer_url("Not Found Trailer For This Anime :/");
 				} else {
-					
-					if(producerServiceImpl.existsProducerByName(jikanProducerObject.getString("name")) != null) {
-						
-						Producer producerSaved = producerServiceImpl.existsProducerByName(jikanProducerObject.getString("name"));
-						
-						anime.getProducers().add(producerSaved);
-					} else {
-						Producer producer = new Producer();					
-						
-						producer.setName(jikanProducerObject.getString("name"));
-						anime.getProducers().add(producer);
-					}
-				}				
-			}
-												
-			for(int auxGenres = 0; auxGenres < jikanGenresArray.length(); auxGenres ++) {
+					anime.setTrailer_url(jikanAnimeDetailObject.getString("trailer_url"));				
+				}
 				
-				JSONObject jikanGenresObject = jikanGenresArray.getJSONObject(auxGenres);
+				if(jikanAnimeDetailObject.getString("status").equals("null") ||
+						jikanAnimeDetailObject.getString("status").isEmpty()) {
+					anime.setStatus("Undefined");
+				} else {
+					anime.setStatus(jikanAnimeDetailObject.getString("status"));
+				}
 							
-				if(jikanGenresObject == null) {
-					
+				if(jikanJSONObject.getString("airing_start").equals("null") || jikanJSONObject.getString("airing_start").isEmpty()) {
+					anime.setAiring_start("Undefined");
 				} else {
-										
-					if(genderServiceImpl.existsGenderByName(jikanGenresObject.getString("name")) != null) {
+					Date date = sdf.parse(jikanJSONObject.getString("airing_start"));
+					String formattedTime = output.format(date);
+					anime.setAiring_start(formattedTime);
+				}
+							
+				if(jikanJSONObject.getString("episodes").equals("null") || jikanJSONObject.getString("episodes").isEmpty()) {
+					anime.setEpisodes(0);
+				} else {				
+					anime.setEpisodes(jikanJSONObject.getInt("episodes"));
+				}
+							
+				if(jikanJSONObject.getString("score").equals("null")) {
+					anime.setScore(5.0);
+				} else {
+					anime.setScore(jikanJSONObject.getDouble("score"));
+				}
+							
+				anime.setKids(jikanJSONObject.getBoolean("kids"));
+				anime.setContinuing(jikanJSONObject.getBoolean("continuing"));
+				
+				for(int auxProducer = 0; auxProducer < jikanProducersArray.length(); auxProducer ++) {
+				
+					JSONObject jikanProducerObject = jikanProducersArray.getJSONObject(auxProducer);
+					
+					if(jikanProducerObject == null) {
 						
-						Gender genderSaved = genderServiceImpl.existsGenderByName(jikanGenresObject.getString("name"));
-						
-						anime.getGenders().add(genderSaved);		
 					} else {
-						Gender gender = new Gender();
 						
-						gender.setName(jikanGenresObject.getString("name"));
-						anime.getGenders().add(gender);		
+						if(producerServiceImpl.existsProducerByName(jikanProducerObject.getString("name")) != null) {
+							
+							Producer producerSaved = producerServiceImpl.existsProducerByName(jikanProducerObject.getString("name"));
+							
+							anime.getProducers().add(producerSaved);
+						} else {
+							Producer producer = new Producer();					
+							
+							producer.setName(jikanProducerObject.getString("name"));
+							anime.getProducers().add(producer);
+						}
+					}				
+				}
+													
+				for(int auxGenres = 0; auxGenres < jikanGenresArray.length(); auxGenres ++) {
+					
+					JSONObject jikanGenresObject = jikanGenresArray.getJSONObject(auxGenres);
+								
+					if(jikanGenresObject == null) {
+						
+					} else {
+											
+						if(genderServiceImpl.existsGenderByName(jikanGenresObject.getString("name")) != null) {
+							
+							Gender genderSaved = genderServiceImpl.existsGenderByName(jikanGenresObject.getString("name"));
+							
+							anime.getGenders().add(genderSaved);		
+						} else {
+							Gender gender = new Gender();
+							
+							gender.setName(jikanGenresObject.getString("name"));
+							anime.getGenders().add(gender);		
+						}
 					}
 				}
+				
+				animeServiceImpl.createAnime(anime);
 			}
-			
-			animeServiceImpl.createAnime(anime);
 		}
-		
+						
+	
 		for(int aux = 0; aux < jikanArrayManga.length(); aux ++) {
 			
 			Manga manga = new Manga();

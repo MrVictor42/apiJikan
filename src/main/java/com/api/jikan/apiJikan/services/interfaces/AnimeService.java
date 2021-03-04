@@ -13,4 +13,5 @@ public interface AnimeService {
 	public Iterable<Anime> filterAnime(int genderId, int producerId);
 	public Iterable<Anime> filterAnimeByGender(int genderId);
 	public Iterable<Anime> filterAnimeByProducer(int producerId);
+	public Iterable<Anime> getAnimeCarousel();
 }

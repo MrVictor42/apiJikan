@@ -26,9 +26,12 @@ public class Anime {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
+	private String mal_id;
 	private String title;
 	private String slug;
 	private String image_url;
+	private String trailer_url;
+	private String status;
 	@Lob
 	@Column(length = 1000)
 	private String synopsis;
@@ -150,5 +153,29 @@ public class Anime {
 
 	public void setAiring_start(String airing_start) {
 		this.airing_start = airing_start;
+	}
+
+	public String getMal_id() {
+		return mal_id;
+	}
+
+	public void setMal_id(String mal_id) {
+		this.mal_id = mal_id;
+	}
+
+	public String getTrailer_url() {
+		return trailer_url;
+	}
+
+	public void setTrailer_url(String trailer_url) {
+		this.trailer_url = trailer_url;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }
