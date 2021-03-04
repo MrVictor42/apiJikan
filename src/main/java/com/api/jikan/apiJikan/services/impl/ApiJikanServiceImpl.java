@@ -25,7 +25,8 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			"https://api.jikan.moe/v3/season/" + dateServiceImpl.getYear() + "/" + dateServiceImpl.getSeason();
 	private final String TOP_MANGA = "https://api.jikan.moe/v3/top/manga";
 	private final String TOP_ANIME = "https://api.jikan.moe/v3/top/anime";
-	private String ANIME_DETAILS = "https://api.jikan.moe/v3/anime/";
+	private final String ANIME_DETAILS = "https://api.jikan.moe/v3/anime/";
+	private final String MANGA_DETAILS = "https://api.jikan.moe/v3/manga/";
 	
 	@Autowired
 	private AnimeServiceImpl animeServiceImpl;
@@ -77,12 +78,8 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 		SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd");
 		
 		for(int aux = 0; aux < jikanArrayAnime.length(); aux ++) {
-			
-			Anime anime = new Anime();
-			
+						
 			JSONObject jikanJSONObject = jikanArrayAnime.getJSONObject(aux);
-			JSONArray jikanProducersArray = jikanJSONObject.getJSONArray("producers");
-			JSONArray jikanGenresArray = jikanJSONObject.getJSONArray("genres");				
 			String mal_id = jikanJSONObject.getString("mal_id");
 			String jsonAnimeDetails = handlerServiceImpl.makeServiceCall(ANIME_DETAILS + mal_id);
 			
@@ -90,7 +87,10 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 				
 			} else {
 				
+				Anime anime = new Anime();
 				JSONObject jikanAnimeDetailObject = new JSONObject(jsonAnimeDetails);
+				JSONArray jikanProducersArray = jikanJSONObject.getJSONArray("producers");
+				JSONArray jikanGenresArray = jikanJSONObject.getJSONArray("genres");	
 				
 				anime.setTitle(jikanJSONObject.getString("title"));
 				anime.setMal_id(jikanJSONObject.getString("mal_id"));
@@ -105,22 +105,22 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 					anime.setTrailer_url(jikanAnimeDetailObject.getString("trailer_url"));				
 				}
 				
-				if(jikanAnimeDetailObject.getString("status").equals("null") ||
-						jikanAnimeDetailObject.getString("status").isEmpty()) {
+				if(jikanAnimeDetailObject.getString("status").equals("null")) {
 					anime.setStatus("Undefined");
 				} else {
 					anime.setStatus(jikanAnimeDetailObject.getString("status"));
 				}
 							
-				if(jikanJSONObject.getString("airing_start").equals("null") || jikanJSONObject.getString("airing_start").isEmpty()) {
+				if(jikanJSONObject.getString("airing_start").equals("null")) {
 					anime.setAiring_start("Undefined");
 				} else {
+					
 					Date date = sdf.parse(jikanJSONObject.getString("airing_start"));
 					String formattedTime = output.format(date);
 					anime.setAiring_start(formattedTime);
 				}
 							
-				if(jikanJSONObject.getString("episodes").equals("null") || jikanJSONObject.getString("episodes").isEmpty()) {
+				if(jikanJSONObject.getString("episodes").equals("null")) {
 					anime.setEpisodes(0);
 				} else {				
 					anime.setEpisodes(jikanJSONObject.getInt("episodes"));
@@ -149,6 +149,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 							
 							anime.getProducers().add(producerSaved);
 						} else {
+							
 							Producer producer = new Producer();					
 							
 							producer.setName(jikanProducerObject.getString("name"));
@@ -171,6 +172,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 							
 							anime.getGenders().add(genderSaved);		
 						} else {
+							
 							Gender gender = new Gender();
 							
 							gender.setName(jikanGenresObject.getString("name"));
@@ -182,41 +184,63 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 				animeServiceImpl.createAnime(anime);
 			}
 		}
-						
-	
+							
 		for(int aux = 0; aux < jikanArrayManga.length(); aux ++) {
 			
-			Manga manga = new Manga();
-			
 			JSONObject jikanMangaJSONObject = jikanArrayManga.getJSONObject(aux);
+			String mal_id = jikanMangaJSONObject.getString("mal_id");
+			String jsonMangaDetails = handlerServiceImpl.makeServiceCall(MANGA_DETAILS + mal_id);
 			
-			manga.setTitle(jikanMangaJSONObject.getString("title"));
-			manga.setSlug(slugServiceImpl.makeSlug(manga.getTitle()));
-			manga.setStart_date(jikanMangaJSONObject.getString("start_date"));
-			manga.setImage_url(jikanMangaJSONObject.getString("image_url"));
-			
-			if(jikanMangaJSONObject.getString("volumes").equals("null") || 
-					jikanMangaJSONObject.getString("volumes").isEmpty()) {
-				manga.setVolumes(0);
+			if(jsonMangaDetails == null) {
+				
 			} else {
-				manga.setVolumes(jikanMangaJSONObject.getInt("volumes"));
+				
+				Manga manga = new Manga();
+				JSONObject jikanMangaDetailObject = new JSONObject(jsonMangaDetails);
+				
+				manga.setTitle(jikanMangaJSONObject.getString("title"));
+				manga.setSlug(slugServiceImpl.makeSlug(manga.getTitle()));
+				manga.setStart_date(jikanMangaJSONObject.getString("start_date"));
+				manga.setImage_url(jikanMangaJSONObject.getString("image_url"));
+				
+				if(jikanMangaDetailObject.getString("type").equals("null")) {
+					manga.setType("Undefined");
+				} else {
+					manga.setType(jikanMangaDetailObject.getString("type"));
+				}
+				
+				if(jikanMangaDetailObject.getString("status").equals("null")) {
+					manga.setStatus("Undefined");
+				} else {
+					manga.setStatus(jikanMangaDetailObject.getString("status"));
+				}
+				
+				if(jikanMangaDetailObject.getString("chapters").equals("null")) {
+					manga.setChapter(0);
+				} else {
+					manga.setChapter(jikanMangaDetailObject.getInt("chapters"));
+				}
+				
+				if(jikanMangaJSONObject.getString("volumes").equals("null")) {
+					manga.setVolumes(0);
+				} else {
+					manga.setVolumes(jikanMangaJSONObject.getInt("volumes"));
+				}
+				
+				if(jikanMangaJSONObject.getString("end_date").equals("null")) {
+					manga.setEnd_date("Undefined");
+				} else {
+					manga.setEnd_date(jikanMangaJSONObject.getString("end_date"));
+				}
+				
+				if(jikanMangaJSONObject.getString("score").equals("null")) {
+					manga.setScore(0.0);
+				} else {
+					manga.setScore(jikanMangaJSONObject.getDouble("score"));
+				}
+				
+				mangaServiceImpl.createManga(manga);
 			}
-			
-			if(jikanMangaJSONObject.getString("end_date").equals("null") || 
-					jikanMangaJSONObject.getString("end_date").isEmpty()) {
-				manga.setEnd_date("Undefined");
-			} else {
-				manga.setEnd_date(jikanMangaJSONObject.getString("end_date"));
-			}
-			
-			if(jikanMangaJSONObject.getString("score").equals("null") ||
-					jikanMangaJSONObject.getString("score").isEmpty()) {
-				manga.setScore(0.0);
-			} else {
-				manga.setScore(jikanMangaJSONObject.getDouble("score"));
-			}
-			
-			mangaServiceImpl.createManga(manga);
 		}
 
 		for(int aux = 0; aux < jikanArrayAnimeTop.length(); aux ++) {
@@ -230,22 +254,19 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			anime.setImage_url(jikanAnimeTopJSONObject.getString("image_url"));
 			anime.setStart_date(jikanAnimeTopJSONObject.getString("start_date"));
 			
-			if(jikanAnimeTopJSONObject.getString("episodes").equals("null") || 
-					jikanAnimeTopJSONObject.getString("episodes").isEmpty()) {
+			if(jikanAnimeTopJSONObject.getString("episodes").equals("null")) {
 				anime.setEpisodes(0);
 			} else {				
 				anime.setEpisodes(jikanAnimeTopJSONObject.getInt("episodes"));
 			}
 			
-			if(jikanAnimeTopJSONObject.getString("end_date").equals("null") ||
-					jikanAnimeTopJSONObject.getString("end_date").isEmpty()) {
+			if(jikanAnimeTopJSONObject.getString("end_date").equals("null")) {
 				anime.setEnd_date("Undefined");
 			} else {
 				anime.setEnd_date(jikanAnimeTopJSONObject.getString("end_date"));
 			}
 			
-			if(jikanAnimeTopJSONObject.getString("score").equals("null") ||
-					jikanAnimeTopJSONObject.getString("score").isEmpty()) {
+			if(jikanAnimeTopJSONObject.getString("score").equals("null")) {
 				anime.setScore(0.0);
 			} else {
 				anime.setScore(jikanAnimeTopJSONObject.getDouble("score"));

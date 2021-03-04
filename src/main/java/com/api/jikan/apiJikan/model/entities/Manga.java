@@ -20,6 +20,9 @@ public class Manga {
 	private Double score;
 	private String image_url;
 	private String slug;
+	private String status;
+	private String type;
+	private int chapter;
 	
 	public Manga() {
 		
@@ -87,5 +90,29 @@ public class Manga {
 
 	public void setSlug(String slug) {
 		this.slug = slug;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public int getChapter() {
+		return chapter;
+	}
+
+	public void setChapter(int chapter) {
+		this.chapter = chapter;
 	}
 }
