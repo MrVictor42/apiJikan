@@ -7,4 +7,5 @@ public interface TopAnimeService {
 	public void createTopAnime(TopAnime anime);
 	public void deleteTopAnime();
 	public TopAnime getTopAnime(String slug);
+	public Iterable<TopAnime> getAllTopAnime();
 }

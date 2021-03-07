@@ -27,4 +27,9 @@ public class TopAnimeServiceImpl implements TopAnimeService {
 	public TopAnime getTopAnime(String slug) {
 		return topAnimeRepository.findBySlug(slug);
 	}
+
+	@Override
+	public Iterable<TopAnime> getAllTopAnime() {
+		return topAnimeRepository.findAll();
+	}
 }
