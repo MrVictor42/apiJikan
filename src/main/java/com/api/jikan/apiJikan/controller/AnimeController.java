@@ -24,12 +24,13 @@ public class AnimeController {
 	
 	@GetMapping("/list/update")
 	public Iterable<Anime> getAllAnimeUpdate() throws JSONException, ParseException {
-		apiJikanServiceImpl.getAnimeFromJikanService();																																																																																																																																																																																																																																															
+		
+		apiJikanServiceImpl.synchronize();
 		return animeServiceImpl.getAllAnime();
 	}
 	
 	@GetMapping("/list/")
-	public Iterable<Anime> getAllAnime() throws JSONException, ParseException {																																																																																																																																																																																																																																															
+	public Iterable<Anime> getAllAnime() {																																																																																																																																																																																																																																															
 		return animeServiceImpl.getAllAnime();
 	}
 	
