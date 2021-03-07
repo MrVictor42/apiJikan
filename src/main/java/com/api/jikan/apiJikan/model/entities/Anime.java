@@ -1,7 +1,7 @@
 package com.api.jikan.apiJikan.model.entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -46,19 +46,29 @@ public class Anime {
     joinColumns = { @JoinColumn(name = "anime_id") }, inverseJoinColumns = { @JoinColumn(name = "producer_id") }, 
 	uniqueConstraints = {@UniqueConstraint(columnNames = {"anime_id", "producer_id"})})
 	@JsonManagedReference
-	private List<Producer> producers = new ArrayList<Producer>();
+	private Set<Producer> producers = new HashSet<Producer>();
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "anime_genders", 
     joinColumns = { @JoinColumn(name = "anime_id") }, inverseJoinColumns = { @JoinColumn(name = "gender_id") }, 
     uniqueConstraints = {@UniqueConstraint(columnNames = {"anime_id", "gender_id"})})
 	@JsonManagedReference
-	private List<Gender> genders = new ArrayList<Gender>();
+	private Set<Gender> genders = new HashSet<Gender>();
 	
 	public Anime() {
 		
 	}
-
+	
+	public void removeGender(Gender gender) {
+		genders.remove(gender);
+		gender.getAnimes().remove(this);
+	}
+	
+	public void removeProducer(Producer producer) {
+		producers.remove(producer);
+		producer.getAnimes().remove(this);
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -75,20 +85,20 @@ public class Anime {
 		this.slug = slug;
 	}
 
-	public List<Gender> getGenders() {
-		return genders;
-	}
-
-	public void setGenders(List<Gender> genders) {
-		this.genders = genders;
-	}
-
-	public List<Producer> getProducers() {
+	public Set<Producer> getProducers() {
 		return producers;
 	}
 
-	public void setProducers(List<Producer> producers) {
+	public void setProducers(Set<Producer> producers) {
 		this.producers = producers;
+	}
+
+	public Set<Gender> getGenders() {
+		return genders;
+	}
+
+	public void setGenders(Set<Gender> genders) {
+		this.genders = genders;
 	}
 
 	public String getTitle() {
