@@ -1,7 +1,9 @@
 package com.api.jikan.apiJikan.model.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.api.jikan.apiJikan.model.entities.Anime;
 
@@ -20,8 +22,4 @@ public interface AnimeRepository extends PagingAndSortingRepository<Anime, Integ
 			+ "LEFT JOIN anime_producers AP ON A.id = AP.anime_id WHERE AP.producer_id = (?)", 
 			nativeQuery = true)
 	public Iterable<Anime> findByProducersById(int producersId);
-	@Query(value = "DROP DATABASE IF EXISTS apiJikanBoot", nativeQuery = true)
-	public void deleteDatabase();
-	@Query(value = "CREATE DATABASE IF NOT EXISTS apiJikanBoot", nativeQuery = true)
-	public void createDatabase();
 }

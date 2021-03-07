@@ -22,10 +22,20 @@ public class AnimeController {
 	@Autowired
 	private AnimeServiceImpl animeServiceImpl;
 	
-	@GetMapping("/list")
-	public Iterable<Anime> getAllAnime() throws JSONException, ParseException {
-//		apiJikanServiceImpl.synchronizeDatabase();																																																																																																																																																																																																																																															
+	@GetMapping("/list/update")
+	public Iterable<Anime> getAllAnimeUpdate() throws JSONException, ParseException {
+		apiJikanServiceImpl.getAnimeFromJikanService();																																																																																																																																																																																																																																															
 		return animeServiceImpl.getAllAnime();
+	}
+	
+	@GetMapping("/list/")
+	public Iterable<Anime> getAllAnime() throws JSONException, ParseException {																																																																																																																																																																																																																																															
+		return animeServiceImpl.getAllAnime();
+	}
+	
+	@GetMapping("/count")
+	public long getCountDatabase() {
+		return animeServiceImpl.countAnimeInDatabase();
 	}
 	
 	@GetMapping("/{slug}")

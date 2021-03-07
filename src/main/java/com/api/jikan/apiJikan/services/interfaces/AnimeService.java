@@ -5,13 +5,10 @@ import com.api.jikan.apiJikan.model.entities.Anime;
 public interface AnimeService {
 	
 	public void createAnime(Anime anime);
-	public void deleteDatabase();
-	public void createDatabase();
 	public Anime getAnime(String slug);
 	public long countAnimeInDatabase();
 	public Iterable<Anime> getAllAnime();
 	public Iterable<Anime> filterAnime(int genderId, int producerId);
 	public Iterable<Anime> filterAnimeByGender(int genderId);
 	public Iterable<Anime> filterAnimeByProducer(int producerId);
-	public Iterable<Anime> getAnimeCarousel();
 }

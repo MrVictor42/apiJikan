@@ -50,16 +50,6 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 	}
 
 	@Override
-	public void deleteDatabase() {
-		animeServiceImpl.deleteDatabase();
-	}
-	
-	@Override
-	public void createDatabase() {
-		animeServiceImpl.createDatabase();		
-	}
-
-	@Override
 	public void getAnimeFromJikanService() throws JSONException, ParseException {
 	
 		HttpHandlerServiceImpl handlerServiceImpl = new HttpHandlerServiceImpl();
@@ -273,29 +263,6 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 			}
 			
 			topAnimeServiceImpl.createTopAnime(anime);
-		}
-	}
-
-	@Override
-	public void synchronizeDatabase() throws JSONException, ParseException {
-		
-		if(databaseIsEmpty() == true) {
-			getAnimeFromJikanService();
-		} else {
-			
-			HttpHandlerServiceImpl handlerServiceImpl = new HttpHandlerServiceImpl();
-			String jsonJikan = handlerServiceImpl.makeServiceCall(JIKAN_API);			
-			JSONObject jikanAnimeObject = new JSONObject(jsonJikan);
-			JSONArray jikanArrayAnime = jikanAnimeObject.getJSONArray("anime");
-						
-			if(animeServiceImpl.countAnimeInDatabase() == jikanArrayAnime.length()) {
-				return;
-			} else {
-
-				deleteDatabase();
-				createDatabase();
-				getAnimeFromJikanService();
-			}
 		}
 	}
 }
