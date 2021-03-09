@@ -69,6 +69,10 @@
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.github.eirslett</groupId>
 			<artifactId>frontend-maven-plugin</artifactId>
 			<version>1.6</version>
