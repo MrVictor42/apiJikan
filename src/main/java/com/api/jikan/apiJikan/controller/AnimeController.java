@@ -44,18 +44,8 @@ public class AnimeController {
 		return animeServiceImpl.getAnime(slug);
 	}
 	
-	@GetMapping("filter/{gender_id}/{producer_id}")
-	public Iterable<Anime> getAnimeFilters(@PathVariable int gender_id,@PathVariable int producer_id) {
-		return animeServiceImpl.filterAnime(gender_id, producer_id);
-	}
-	
 	@GetMapping("filterByGender/{gender_id}")
 	public Iterable<Anime> getAnimeByGender(@PathVariable int gender_id) {
 		return animeServiceImpl.filterAnimeByGender(gender_id);
-	}
-	
-	@GetMapping("filterByProducer/{producer_id}")
-	public Iterable<Anime> getAnimeByProducer(@PathVariable int producer_id) {
-		return animeServiceImpl.filterAnimeByProducer(producer_id);
 	}
 }

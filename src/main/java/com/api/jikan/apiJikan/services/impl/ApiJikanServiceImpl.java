@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import com.api.jikan.apiJikan.model.entities.Anime;
 import com.api.jikan.apiJikan.model.entities.Gender;
 import com.api.jikan.apiJikan.model.entities.Manga;
-import com.api.jikan.apiJikan.model.entities.Producer;
 import com.api.jikan.apiJikan.model.entities.TopAnime;
 import com.api.jikan.apiJikan.services.interfaces.ApiJikanService;
 
@@ -32,8 +31,6 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 	private AnimeServiceImpl animeServiceImpl;
 	@Autowired
 	private GenderServiceImpl genderServiceImpl;
-	@Autowired
-	private ProducerServiceImpl producerServiceImpl;
 	@Autowired
 	private MangaServiceImpl mangaServiceImpl;
 	@Autowired
@@ -70,7 +67,6 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 		for(int aux = 0; aux < jikanArrayAnime.length(); aux ++) {
 						
 			JSONObject jikanJSONObject = jikanArrayAnime.getJSONObject(aux);			
-			JSONArray jikanProducersArray = jikanJSONObject.getJSONArray("producers");
 			JSONArray jikanGenresArray = jikanJSONObject.getJSONArray("genres");	
 			Anime anime = new Anime();
 			
@@ -126,30 +122,7 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 						
 			anime.setKids(jikanJSONObject.getBoolean("kids"));
 			anime.setContinuing(jikanJSONObject.getBoolean("continuing"));
-			
-			for(int auxProducer = 0; auxProducer < jikanProducersArray.length(); auxProducer ++) {
-			
-				JSONObject jikanProducerObject = jikanProducersArray.getJSONObject(auxProducer);
-				
-				if(jikanProducerObject == null) {
-					
-				} else {
-					
-					if(producerServiceImpl.existsProducerByName(jikanProducerObject.getString("name")) != null) {
-						
-						Producer producerSaved = producerServiceImpl.existsProducerByName(jikanProducerObject.getString("name"));
-						
-						anime.getProducers().add(producerSaved);
-					} else {
-						
-						Producer producer = new Producer();					
-						
-						producer.setName(jikanProducerObject.getString("name"));
-						anime.getProducers().add(producer);
-					}
-				}				
-			}
-												
+															
 			for(int auxGenres = 0; auxGenres < jikanGenresArray.length(); auxGenres ++) {
 				
 				JSONObject jikanGenresObject = jikanGenresArray.getJSONObject(auxGenres);
@@ -271,7 +244,6 @@ public class ApiJikanServiceImpl implements ApiJikanService {
 	public void deleteDatabase() {
 		
 		animeServiceImpl.removeGenders();
-		animeServiceImpl.removeProducers();
 		animeServiceImpl.removeAnime();
 		mangaServiceImpl.deleteManga();
 		topAnimeServiceImpl.deleteTopAnime();

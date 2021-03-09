@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.api.jikan.apiJikan.model.entities.Anime;
 import com.api.jikan.apiJikan.model.entities.Gender;
-import com.api.jikan.apiJikan.model.entities.Producer;
 import com.api.jikan.apiJikan.model.repository.AnimeRepository;
 import com.api.jikan.apiJikan.model.repository.GenderRepository;
-import com.api.jikan.apiJikan.model.repository.ProducerRepository;
 import com.api.jikan.apiJikan.services.interfaces.AnimeService;
 
 @Service
@@ -20,8 +18,6 @@ public class AnimeServiceImpl implements AnimeService {
 	private AnimeRepository animeRepository;
 	@Autowired
 	private GenderRepository genderRepository;
-	@Autowired
-	private ProducerRepository producerRepository;
 
 	@Override
 	public void createAnime(Anime anime) {
@@ -44,18 +40,8 @@ public class AnimeServiceImpl implements AnimeService {
 	}
 
 	@Override
-	public Iterable<Anime> filterAnime(int genderId, int producerId) {
-		return animeRepository.findByGendersAndByProducerId(genderId, producerId);
-	}
-
-	@Override
 	public Iterable<Anime> filterAnimeByGender(int genderId) {
 		return animeRepository.findByGendersById(genderId);
-	}
-
-	@Override
-	public Iterable<Anime> filterAnimeByProducer(int producerId) {
-		return animeRepository.findByProducersById(producerId);
 	}
 
 	@Override
@@ -70,20 +56,6 @@ public class AnimeServiceImpl implements AnimeService {
 			}
 		}
 		genderRepository.deleteAll();
-	}
-
-	@Override
-	public void removeProducers() {
-		
-		List<Anime> animes = animeRepository.findAll();
-		List<Producer> producers = producerRepository.findAll();
-		
-		for(Anime anime: animes) {
-			for(Producer producer: producers) {
-				anime.removeProducer(producer);
-			}
-		}
-		producerRepository.deleteAll();
 	}
 
 	@Override

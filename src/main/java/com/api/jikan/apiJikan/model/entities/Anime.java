@@ -42,13 +42,6 @@ public class Anime {
 	private boolean continuing;
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "anime_producers", 
-    joinColumns = { @JoinColumn(name = "anime_id") }, inverseJoinColumns = { @JoinColumn(name = "producer_id") }, 
-	uniqueConstraints = {@UniqueConstraint(columnNames = {"anime_id", "producer_id"})})
-	@JsonManagedReference
-	private Set<Producer> producers = new HashSet<Producer>();
-	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = "anime_genders", 
     joinColumns = { @JoinColumn(name = "anime_id") }, inverseJoinColumns = { @JoinColumn(name = "gender_id") }, 
     uniqueConstraints = {@UniqueConstraint(columnNames = {"anime_id", "gender_id"})})
@@ -62,11 +55,6 @@ public class Anime {
 	public void removeGender(Gender gender) {
 		genders.remove(gender);
 		gender.getAnimes().remove(this);
-	}
-	
-	public void removeProducer(Producer producer) {
-		producers.remove(producer);
-		producer.getAnimes().remove(this);
 	}
 	
 	public int getId() {
@@ -83,14 +71,6 @@ public class Anime {
 
 	public void setSlug(String slug) {
 		this.slug = slug;
-	}
-
-	public Set<Producer> getProducers() {
-		return producers;
-	}
-
-	public void setProducers(Set<Producer> producers) {
-		this.producers = producers;
 	}
 
 	public Set<Gender> getGenders() {
